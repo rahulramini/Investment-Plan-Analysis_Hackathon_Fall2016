@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><!DOCTYPE html>
+        <html lang="en" data-ng-app = "SRKM">
+        <head>
+            <meta charset="UTF-8">
+            <title>Investment Plan</title>
+            <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+            <script type="text/javascript">
+                function Matrix() {
+                    var x1=document.getElementById("Home_annualSalary").value;
+                    var currentIncome = parseInt(x1);
+                    var balance401= Number(document.getElementById("Home_currentBalance").value);
+                    var interestRate = Number(document.getElementById("Home_interestRate").value);
+                    var personalContribution = Number(document.getElementById("Home_personalContribution").value);
+                    var match_emp = Number(document.getElementById("Home_match").value);
+                    var growthRate = Number(document.getElementById("Home_growth").value);
+                    var currentAge = Number(document.getElementById("Home_currentAge").value);
+                    var retirementAge = Number(document.getElementById("Home_retirementAge").value);
+                    var risk = document.querySelector('input[name = "Risk"]:checked').value;
+                    var ageDiff = retirementAge - currentAge;
+                    var Bonds, MFS, Stocks;
+                    if (ageDiff <= 0) {
+                        alert("Current Age cannot be greater than Retirement");
+                    }
+                    switch (risk) {
+                        case "Low" :
+                            if (ageDiff <= 10) {
+                                Bonds = 75;
+                                MFS = 15;
+                                Stocks = 10;
+                            }
+                            else if (ageDiff >= 11 && ageDiff <= 20) {
+                                Bonds = 55;
+                                MFS = 25;
+                                Stocks = 20;
+                            }
+                            else {
+                                Bonds = 35;
+                                MFS = 35;
+                                Stocks = 30;
+                            }
+                            break;
+                        case "Medium" :
+                            if (ageDiff <= 10) {
+                                Bonds = 60;
+                                MFS = 20;
+                                Stocks = 20;
+                            }
+                            else if (ageDiff >= 11 && ageDiff <= 20) {
+                                Bonds = 40;
+                                MFS = 30;
+                                Stocks = 30;
+                            }
+                            else {
+                                Bonds = 20;
+                                MFS = 40;
+                                Stocks = 40;
+                            }
+                            break;
+                        case "High" :
+                            if (ageDiff <= 10) {
+                                Bonds = 40;
+                                MFS = 25;
+                                Stocks = 35;
+                            }
+                            else if (ageDiff >= 11 && ageDiff <= 20) {
+                                Bonds = 20;
+                                MFS = 35;
+                                Stocks = 45;
+                            }
+                            else {
+                                Bonds = 5;
+                                MFS = 40;
+                                Stocks = 55;
+                            }
+                            break;
+                    }
+                    google.charts.load('current', {'packages':['corechart']});
+                    google.charts.setOnLoadCallback(function () {
+                        drawChart(Bonds,MFS,Stocks);
+                    });
+                    /* document.write("<tr><th style='color: red;'>YEAR</th>");
+                     document.write("<th style='color: red; text-align: right;'>AGE</th>");
+                     document.write("<th style='color: red; text-align: right;'>RATE</th>");
+                     document.write("<th style='color: red;'>SALARY</th>");
+                     document.write("<th style='color: red; text-align: right;'>ANNUAL CONTRIBUTION</th>");
+                     document.write("<th style='color: red; text-align: right;'>EMPLOYER CONTRIBUTION</th>");
+                     document.write("<th style='color: red;'>INTEREST</th>");
+                     document.write("<th style='color: red; text-align: right;'>BALANCE</th></tr>")
+                     var sal=currentIncome;
+                     var per_contribution;
+                     var emp_contribution;
+                     for (var i = 1; i <=ageDiff; i++) {
+                     sal= (Sal*(interestRate/100))+sal;
+                     per_contribution=sal*(per_contribution/100);
+                     emp_contribution = match_emp*per_contribution;
+
+                     document.write("<tr><td style='width: 100px;'>"+ i + "</td>");
+                     // myArray[i] = myArray[i].toFixed(3);
+                     document.write("<td style='width: 100px; text-align: right;'>" + i + "</td>");
+                     document.write("<td style='width: 100px; text-align: right;'>" + currentAge+i + "</td></tr>");
+                     document.write("<td style='width: 100px; text-align: right;'>" + interestRate + "</td>");
+                     document.write("<td style='width: 100px; text-align: right;'>" + sal + "</td></tr>");
+                     }*/
+                    myFunction(currentAge,currentIncome,interestRate,personalContribution,match_emp,ageDiff,growthRate,balance401);
+                }
+
+                function drawChart(Bonds,MFS,Stocks) {
+
+                    var data = google.visualization.arrayToDataTable([
+                        ['Type', 'Value'],
+                        ['Bonds', Bonds],
+                        ['Mutual Funds', MFS],
+                        ['Stocks', Stocks]
+                    ]);
+
+                    var options = {
+                        title: 'Investment Plan'
+                    };
+
+                    var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+                    chart.draw(data, options);
+                }
+                function myFunction(currentAge,currentIncome,interestRate,personalContribution,match_emp,ageDiff,growthRate,balance401) {
+                    var sal= currentIncome;
+
+                    var emp_contribution;
+                    var anl_contribution;
+                    var interest = 0;
+                    var totalBalance = balance401;
+                    var table = document.getElementById("myTable");
+                    for (var i = 0; i < ageDiff; i++) {
+                        console.log(i)
+                        sal= (sal*(growthRate/100))+sal;
+                        sal= round(sal,2);
+                        anl_contribution=sal*(personalContribution/100);
+                        emp_contribution = (match_emp/100)*anl_contribution;
+                        interest = ((balance401+interest)*(1+(interestRate/100)))-balance401;
+                        totalBalance=anl_contribution+emp_contribution+interest+totalBalance;
+                        totalBalance= round(totalBalance,2);
+                        var row = table.insertRow(i+1);
+                        var cell1 = row.insertCell(0);
+                        var cell2 = row.insertCell(1);
+                        var cell3 = row.insertCell(2);
+                        var cell4 = row.insertCell(3);
+                        var cell5 = row.insertCell(4);
+                        var cell6 = row.insertCell(5);
+                        var cell7 = row.insertCell(6);
+                        var cell8 = row.insertCell(7);
+                        cell1.innerHTML = i+1;
+                        cell2.innerHTML =currentAge+i+1 ;
+                        cell3.innerHTML = interestRate;
+                        cell4.innerHTML = sal;
+                        cell5.innerHTML = anl_contribution;
+                        cell6.innerHTML = emp_contribution;
+                        cell7.innerHTML = interest;
+                        cell8.innerHTML = totalBalance;
+
+                    }
+                }
+
+                function round(value, decimals) {
+                    return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+                }
+                function addRow(tableId)
+                {
+                    var addrow=1;
+                    var table=document.getElementById(tableId);
+                    var rowCount=table.rows.length;
+                    for(var i=1;i<=3;i++)
+                    {
+                        if(addrow==1)
+                        {
+                            var newRow=table.insertRow(rowCount);
+                            var cell0=newRow1.insertCell(0);
+                            var element0=document.createElement("input");
+                            element0.type="text";
+                            cell0.appendChild(element0);
+                        }
+                        if(addrow==2)
+                        {
+                            var newRow2=table.insertRow(rowCount);
+                            var cell0=newRow1.insertCell(0);
+                            var element0=document.createElement("textarea");
+                            cell0.appendChild(element0);
+                        }
+                        if(addrow==3)
+                        {
+                            var newRow3=table.insertRow(rowCount);
+                            var cell0=newRow1.insertCell(0);
+                            var element0=document.createElement("input");
+                            element0.type="button";
+                            cell0.appendChild(element0);
+                        }
+                        addrow++;
+                    }
+                }
+
+            </script>
+            <style>
+                table, th, td {
+                    border: 1px solid black;
+                }
+            </style>
+        </head>
+<body style="text-align: center">
+<h1>401k Data Input Form</h1>
+<h5>*Please fill all the below details</h5>
+<form>
+    Current Age : <input type="text" name="Current Age" id="Home_currentAge"><br><br>
+    Retirement Age : <input type="text" name="Retirement Age" id="Home_retirementAge"><br><br>
+    Current Annual Salary : <input type="text" id="Home_annualSalary" name="Annual Salary"><br><br>
+    Estimated Income growth every Year : <input type="text" name="Growth" id="Home_growth"> %<br><br>
+    Current 401(k) Balance : <input type="text" name="Current Balance" id="Home_currentBalance"><br><br>
+    Interest rate : <input type="text" name="Interest Rate" id="Home_interestRate"><br><br>
+    % Personal Contribution : <input type="text" name="Personal Contribution" id="Home_personalContribution"><br><br>
+    % Match of Employer : <input type="text" name="Match Employer" id="Home_match"><br><br>
+    Risk level : <input type="radio" name="Risk" value="High"> High<input type="radio" name="Risk" value="Medium"> Medium<input type="radio" name="Risk" value="Low"> Low<br><br>
+    <input type="button" value="SUBMIT" onclick="Matrix()">&nbsp;&nbsp;<input type="button" value="RESET">
+</form>
+<div id="piechart" style="width: 900px; height: 500px;"></div>
+<!---------------------------------------------------->
+<table id="myTable";style="width:100%">
+    <tr>
+        <td>YEAR</td>
+        <td>AGE</td>
+        <td>RATE</td>
+        <td>SALARY</td>
+        <td>ANNUAL CONTRIBUTION</td>
+        <td>EMPLOYEE CONTRIBUTION</td>
+        <td>INTEREST</td>
+        <td>BALANCE</td>
+    </tr>
+</table>
+</body>
+</html></title>
+</head>
+<body>
+
+</body>
+</html>
